@@ -1,41 +1,46 @@
 #!/usr/bin/python3
 """Defines a rectangle"""
+import sys
 
+def solve(board, col):
+    if col >= len(board):
+        print_board(board)
+        return
+    for i in range(len(board)):
+        if is_safe(board, i, col):
+            board[i][col] = 1
+            solve(board, col + 1)
+            board[i][col] = 0
 
-class Rectangle:
-    """Represents a rectangle"""
+def is_safe(board, row, col):
+    for i in range(col):
+        if board[row][i] == 1:
+            return False
+    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+        if board[i][j] == 1:
+            return False
+    for i, j in zip(range(row, len(board), 1), range(col, -1, -1)):
+        if board[i][j] == 1:
+            return False
+    return True
 
-    def __init__(self, width=0, height=0):
-        """Initializes the current rectangle.
-         Args:
-            height (int): height of the rectangle
-            width (int): width of the rectangle
-        """
-        self.width = width
-        self.height = height
+def print_board(board):
+    for row in board:
+        print(' '.join(map(str, row)))
 
-    @property
-    def width(self):
-        """Get/set the width"""
-        return self.__width
+if len(sys.argv) != 2:
+    print("Usage: nqueens N")
+    sys.exit(1)
 
-    @width.setter
-    def width(self, value):
-        if not isinstance(value, int):
-            raise TypeError("width must be an integer")
-        if value < 0:
-            raise ValueError("width must be >= 0")
-        self.__width = value
+try:
+    N = int(sys.argv[1])
+except ValueError:
+    print("N must be a number")
+    sys.exit(1)
 
-    @property
-    def height(self):
-        """Get/set the height"""
-        return self.__height
+if N < 4:
+    print("N must be at least 4")
+    sys.exit(1)
 
-    @height.setter
-    def height(self, value):
-        if type(value) != int:
-            raise TypeError("height must be an integer")
-        if value < 0:
-            raise ValueError("height must be >= 0")
-        self.__height = value
+board = [[0 for _ in range(N)] for _ in range(N)]
+solve(board, 0)
